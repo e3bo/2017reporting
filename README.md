@@ -1,7 +1,7 @@
 These files are available to reproduce the results for the manuscript
 "Disentangling reporting and disease transmission using second order
 statistics." The most important files are the R scripts that
-containing the code for all of the calculations. The Makefile shows
+contain the code for all of the calculations. The Makefile shows
 the correct order to run the scripts in to generate all of the
 results. The packrat directory contains a packrat archive of all of
 the R packages used by the scripts. The Docker file gives the

@@ -9,6 +9,8 @@ library(reshape2)
 library(tidyr)
 library(zoo)
 
+### Simulation
+
 seed <- 1
 set.seed(seed)
 
@@ -77,6 +79,8 @@ create_bdi <- function(times = 1, t0 = 0, eta = 1, lambda = 0.5, nu = 0.1,
              rmeasure = rmeasure)
 }
 
+pal <- c("#e2908c", "#319045", "#252525")
+
 ranges <- data.frame(nu = c(0.01, 1), T = c(1, 10), xi = c(0, 1),
                      log10phi = c(-1, 2), obsmodel = c(-1, 1))
 nobs <- 20
@@ -89,8 +93,6 @@ pars$betap <- 0
 pars$N_0 <- -1
 pars$phi <- 10 ^ pars$log10phi
 pars$parset <- 1:nrow(pars)
-
-pal <- c("#e2908c", "#319045", "#252525")
 
 sim_with_params <- function(mod, ..., times = seq(1, 52 * 10), nsim = 1){
   pars <- list(...)
@@ -123,10 +125,57 @@ second_fact_mom <- function(x){
   mean(x * (x - 1)) / mean(x) ^2
 }
 
-bdi <- create_bdi(lambda = 0.5, eta = 1, N_0 = -1, nu = 1)
-out2 <- do_sims(pars, bdi, nsim = 1e4)
+## Simulations for numerical verification
 
-out2 %>% group_by(parset, sim) %>% summarize(m = mean(reports),
+bdi <- create_bdi(lambda = 0.5, eta = 1, N_0 = -1, nu = 1)
+nv_sim <- do_sims(pars, bdi, nsim = 1e4)
+
+## Homogeneous ensemble simulations
+
+pomp::coef(bdi)["lambda"] <- 0.9
+pomp::coef(bdi)["xi"] <- 0.1
+pomp::coef(bdi)["betap"] <- 0.4
+sim <- pomp::simulate(bdi, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+sim$change <- "prep"
+
+bdit <- bdi
+pomp::coef(bdit)["lambda"] <- 0.5
+pomp::coef(bdit)["betap"] <- 0
+pomp::coef(bdit)["betar"] <- 0.4
+pomp::coef(bdit)["xi"] <- 0.5
+simt <- pomp::simulate(bdit, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+simt$change <- "ptrans"
+
+sim_same <- rbind(sim, simt)
+
+### Heterogeneous ensemble simulation
+
+nunits <- 1000
+params1 <- data.frame(repnum = runif(nunits, 0.85, 0.95),
+                      eta = runif(nunits, 0.5 , 1.5),
+                      nu = runif(nunits, 0.5, 1.5),
+                      xi = runif(nunits, 0.05, 0.15),
+                      betar = 0, betap = 0.4, N_0 = -1, phi = 100,
+                      obsmodel = 1)
+params1$parset <- 1:nrow(params1)
+
+params2 <- params1
+params2$repnum <- runif(nunits, 0.45, 0.55)
+params2$xi <- runif(nunits, 0.45, 0.55)
+params2$betap <- 0
+params2$betar <- 0.4
+params <- rbind(params1, params2)
+params$lambda <- params$eta * params$repnum
+
+sim_vary <- do_sims(params, bdi)
+
+parallel::stopCluster(clust)
+
+
+
+## Data processing
+
+nv_sim %>% group_by(parset, sim) %>% summarize(m = mean(reports),
                                              m2 = mean(reports^2),
                                              prod = prod(reports)) %>%
     summarize(sim_mean = mean(m),
@@ -168,6 +217,8 @@ parsp$tau <- parsp$T
 parsp$math_bmf <- eval_eq(parsp, bilinear_mom_eq)
 autocor_eq <- expression((math_bmf - 1) * math_mean ^ 2 / math_var)
 parsp$math_autocor <- eval_eq(parsp, autocor_eq)
+
+## Plotting
 
 simvars <- colnames(parsp)[grep("^sim", colnames(parsp))]
 m1 <- melt(parsp, id = c("parset"), measure = simvars,
@@ -258,27 +309,10 @@ g <- g + labs(x = expression(paste("Reporting probability, ", xi)),
 
 ggsave(file = "mean-and-sfm.pdf", plot = g, height = 84, width = 84, units = "mm")
 
-###
-
-
-pomp::coef(bdi)["lambda"] <- 0.9
-pomp::coef(bdi)["xi"] <- 0.1
-pomp::coef(bdi)["betap"] <- 0.4
-sim <- pomp::simulate(bdi, as.data.frame = TRUE, times = 1:520, nsim = 1000)
-sim$change <- "prep"
-
-bdit <- bdi
-pomp::coef(bdit)["lambda"] <- 0.5
-pomp::coef(bdit)["betap"] <- 0
-pomp::coef(bdit)["betar"] <- 0.4
-pomp::coef(bdit)["xi"] <- 0.5
-simt <- pomp::simulate(bdit, as.data.frame = TRUE, times = 1:520, nsim = 1000)
-simt$change <- "ptrans"
-
-simb <- rbind(sim, simt)
+### Data processing
 
 win_size <- 52
-simb %>% group_by(change, sim) %>%
+sim_same %>% group_by(change, sim) %>%
   mutate(rM = rollmean(reports, k = win_size,
              fill = NA, align = "right")) %>%
     mutate(rV = rollapplyr(reports, width = win_size,
@@ -288,6 +322,10 @@ simb %>% group_by(change, sim) %>%
   mutate(scenario = factor(change,  levels = c("prep", "ptrans"),
              labels = c("Reporting\nincrease",
                  "Transmission\nincrease"))) -> simb2
+
+
+
+
 
 simb2 %>% filter(time > win_size - 0.5) %>% group_by(change, time) %>%
   dplyr::summarize(mean_rM = mean(rM),
@@ -312,11 +350,16 @@ foom %>% mutate(scenario = factor(change,  levels = c("prep", "ptrans"),
   mutate(stat = factor(var, levels = c("rM", "rsfm"),
              labels = c("Mean", "Second\nfactorial moment"))) -> iquants
 
+
+## Plotting
+
 simb2 %>% filter(sim %in% c("2")) %>% group_by() %>%
   select(scenario, time, "Reports" = reports,
          "Second\nfactorial\nmoment" = rSecFacMom, "Mean" = rM,
          x) %>% mutate("Percent\nof change" = 100 * x) %>% select(-x) %>%
     melt(id = c("time", "scenario")) -> simb3
+
+
 
 
 simb3 %>% ggplot(aes(x = time, y = value,
@@ -328,7 +371,7 @@ simb3 %>% ggplot(aes(x = time, y = value,
 ggsave(file = "example-sims.pdf", plot = example_sims_plot, width = 84,
        height = 120, units = "mm")
 
-###
+## Data processing
 
 samp_stat <- function(x, w) {
   colMeans(x[w, ], na.rm = TRUE)
@@ -357,26 +400,8 @@ bquants$ensemble <- "Homogeneous\nensemble"
 iquants$ensemble <- "Individual"
 quants <- merge(bquants, iquants, all = TRUE)
 
-###
 
-nunits <- 1000
-params1 <- data.frame(repnum = runif(nunits, 0.85, 0.95),
-                      eta = runif(nunits, 0.5 , 1.5),
-                      nu = runif(nunits, 0.5, 1.5),
-                      xi = runif(nunits, 0.05, 0.15),
-                      betar = 0, betap = 0.4, N_0 = -1, phi = 100,
-                      obsmodel = 1)
-params1$parset <- 1:nrow(params1)
-
-params2 <- params1
-params2$repnum <- runif(nunits, 0.45, 0.55)
-params2$xi <- runif(nunits, 0.45, 0.55)
-params2$betap <- 0
-params2$betar <- 0.4
-params <- rbind(params1, params2)
-params$lambda <- params$eta * params$repnum
-
-out <- do_sims(params, bdi)
+## Data processing
 
 win_size <- 52
 out %>% group_by(change, parset) %>%
@@ -398,7 +423,7 @@ qq$ensemble <- factor(qq$ensemble,
                       levels = c("Individual", "Homogeneous\nensemble",
                           "Heterogeneous\nensemble"))
 
-
+## Plotting
 
 ggplot(qq, aes(x = time, ymin = q05, ymax = q95, fill = ensemble)) +
   geom_ribbon(alpha = 0.5) +
@@ -411,9 +436,9 @@ ggplot(qq, aes(x = time, ymin = q05, ymax = q95, fill = ensemble)) +
 
 ggsave(file = "quantiles.pdf", plot = quants_plot, width = 84, height = 100, units = "mm")
 
-parallel::stopCluster(clust)
 
-###
+
+## Reproducibility
 
 save.image(file="reporting-vs-transmission.RData")
 
