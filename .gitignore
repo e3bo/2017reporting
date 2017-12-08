@@ -31,6 +31,21 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# Packrat files
 packrat/lib*/
 packrat/src/*
+
+# Misc other
 *~
+flag*
+*.se
+*.so
+*.rds
+*.pdf
+*.eps
+*.RData
+
+# emacs temporary files
+\#*\#
+.\#*
