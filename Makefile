@@ -1,12 +1,12 @@
-all: numerical-verification.eps
+all: mean-and-sfm.eps numerical-verification.eps
 
-numerical-verification.eps: numerical-verification.pdf
+%.eps: %.pdf
 	/usr/bin/pdftops -eps $(<F) $%
 
-mean-and-sfm.pdf: mean-and-sfm-plot.R moment-equations.R
+mean-and-sfm.pdf: mean-and-sfm-plot.R moment-equations.R plotting.R
 	./$< >$(<F).so 2>$(<F).se
 
-numerical-verification.pdf: numerical-verification-plot.R parsp.rds
+numerical-verification.pdf: numerical-verification-plot.R parsp.rds plotting.R
 	./$< >$(<F).so 2>$(<F).se
 
 parsp.rds: numerical-verification-moment-calcs.R flag-ts-data
