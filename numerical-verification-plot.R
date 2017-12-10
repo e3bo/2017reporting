@@ -44,3 +44,5 @@ g <- ggplot(m12, aes(x = theory, y = simulation)) +
           labs(x = "Theory", y = "Simulation")
 
 ggsave(file = "numerical-verification.pdf", plot = g, width = 84, units = "mm")
+
+sessionInfo()

@@ -1,7 +1,10 @@
-all: mean-and-sfm.eps numerical-verification.eps
+all: mean-and-sfm.eps numerical-verification.eps example-sims.eps quantiles.eps
 
 %.eps: %.pdf
 	/usr/bin/pdftops -eps $(<F) $%
+
+example-sims.pdf: example-sims-plot.R individual-sims.rds plotting.R
+	./$< >$(<F).so 2>$(<F).se
 
 mean-and-sfm.pdf: mean-and-sfm-plot.R moment-equations.R plotting.R
 	./$< >$(<F).so 2>$(<F).se

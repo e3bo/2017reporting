@@ -17,3 +17,5 @@ nv_sim %>% group_by(parset, sim) %>% summarize(m = mean(reports),
 
 parsp <- merge(pars, sim_ests)
 saveRDS(parsp, "parsp.rds")
+
+sessionInfo()

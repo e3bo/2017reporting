@@ -37,3 +37,5 @@ g <- g + labs(x = expression(paste("Reporting probability, ", xi)),
 
 ggsave(file = "mean-and-sfm.pdf", plot = g, height = 84, width = 84,
        units = "mm")
+
+sessionInfo()
