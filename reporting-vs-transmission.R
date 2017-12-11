@@ -79,7 +79,7 @@ create_bdi <- function(times = 1, t0 = 0, eta = 1, lambda = 0.5, nu = 0.1,
              rmeasure = rmeasure)
 }
 
-pal <- c("#e2908c", "#319045", "#252525")
+
 
 ranges <- data.frame(nu = c(0.01, 1), T = c(1, 10), xi = c(0, 1),
                      log10phi = c(-1, 2), obsmodel = c(-1, 1))
