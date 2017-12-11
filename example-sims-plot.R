@@ -3,9 +3,9 @@
 library(dplyr)
 source("plotting.R")
 
-individual_sims <- readRDS("individual-sims.rds")
+mwe_same <- readRDS("mwe-same.rds")
 
-individual_sims %>% filter(sim %in% "2") %>% group_by() %>%
+mwe_same %>% filter(sim %in% "2") %>% group_by() %>%
     mutate(scenario = factor(change,  levels = c("prep", "ptrans"),
                              labels = c("Reporting\nincrease",
                                         "Transmission\nincrease"))) %>%
@@ -14,7 +14,7 @@ individual_sims %>% filter(sim %in% "2") %>% group_by() %>%
     mutate("Percent\nof change" = 100 * x) %>% select(-x) %>%
     reshape2::melt(id = c("time", "scenario")) %>%
     ggplot(aes(x = time, y = value, group = interaction(scenario, variable))) +
-  geom_step() + facet_grid(variable ~ scenario, scales = "free_y") +
+    geom_step() + facet_grid(variable ~ scenario, scales = "free_y") +
     scale_x_continuous(breaks = c(0, 200, 400)) +
     labs(x = "Time (weeks)", y = "Value") -> example_sims_plot
 
