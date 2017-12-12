@@ -45,6 +45,7 @@ flag*
 *.pdf
 *.eps
 *.RData
+work*
 
 # emacs temporary files
 \#*\#
