@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/113359526.svg)](https://zenodo.org/badge/latestdoi/113359526)
+
 These files are available to reproduce the results for the manuscript
 "Disentangling reporting and disease transmission using second order
 statistics." The most important files are the R scripts that
