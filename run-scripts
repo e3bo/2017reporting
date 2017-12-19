@@ -19,6 +19,6 @@ trap finish EXIT
 docker run -v ${indir}:${hdir}/src:ro \
        -v ${outdir}:${hdir}/work \
        -w ${hdir}/work \
-       --user docker \
+        --user $(id -u) \
        eamon/2017reporting:20171212 /bin/bash -c \
        "cp ../src/*.R . && cp ../src/Makefile . && ln -s ../packrat && cp ../.Rprofile . && make"
