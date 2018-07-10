@@ -10,6 +10,7 @@ nv_sim %>% group_by(parset, sim) %>% summarize(m = mean(reports),
                                              prod = prod(reports)) %>%
     summarize(sim_mean = mean(m),
               sim_var = mean(m2) - mean(m) ^ 2,
+              sim_cv = sqrt(mean(m2) - mean(m) ^ 2) / mean,
               sim_sfm = (mean(m2) - mean(m)) / mean(m) ^ 2,
               sim_bmf = mean(prod) / mean(m) ^ 2,
               sim_autocor = ((mean(prod) - mean(m)^2) /

@@ -8,7 +8,9 @@ parsp$math_mean <- eval_eq(parsp, mean_eq)
 parsp$gamma <- eval_eq(parsp, gamma_eq)
 parsp$math_sfm_cases <- eval_eq(parsp, sfm_cases_eq)
 parsp$math_nb_var <- eval_eq(parsp, var_nb_eq)
+parsp$math_nb_cv <- eval_eq(parsp, cv_nb_eq)
 parsp$math_binom_var <- eval_eq(parsp, var_binom_eq)
+parsp$math_binom_cv <- eval_eq(parsp, cv_binom_eq)
 parsp$math_var <- ifelse(parsp$obsmodel > 0, parsp$math_binom_var,
                          parsp$math_nb_var)
 parsp$math_sfm_nb_reports <- eval_eq(parsp, sfm_reports_nb_eq)
@@ -34,8 +36,9 @@ m2$statistic <- gsub("_reports$", "", m2$statistic)
 m2$variable <- NULL
 m12 <- merge(m1, m2)
 m12$facet <- factor(m12$statistic,
-                    levels = c("mean", "sfm", "var", "bmf", "autocor"),
+                    levels = c("mean", "sfm", "var", "cv", "bmf", "autocor"),
                     labels = c("Mean", "Second factorial moment", "Variance",
+                               "Coefficient of variation",
                                "Bilinear moment function", "Autocorrelation"))
 
 g <- ggplot(m12, aes(x = theory, y = simulation)) +
