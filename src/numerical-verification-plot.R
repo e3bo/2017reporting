@@ -13,6 +13,9 @@ parsp$math_binom_var <- eval_eq(parsp, var_binom_eq)
 parsp$math_binom_cv <- eval_eq(parsp, cv_binom_eq)
 parsp$math_var <- ifelse(parsp$obsmodel > 0, parsp$math_binom_var,
                          parsp$math_nb_var)
+parsp$math_cv <- ifelse(parsp$obsmodel > 0, parsp$math_binom_cv,
+                         parsp$math_nb_cv)
+
 parsp$math_sfm_nb_reports <- eval_eq(parsp, sfm_reports_nb_eq)
 parsp$math_sfm_reports <- ifelse(parsp$obsmodel > 0, parsp$math_sfm_cases,
                                  parsp$math_sfm_nb_reports)
