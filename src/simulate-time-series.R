@@ -134,6 +134,30 @@ simt$change <- "ptrans"
 sim_same <- rbind(sim, simt)
 saveRDS(sim_same, "sim_same.rds")
 
+### Power spectra simulations
+
+bdi_lowrep <- bdi
+pomp::coef(bdi_lowrep)["betap"] <- 0
+sim_lowrep <- pomp::simulate(bdi_lowrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(sim_lowrep, "sim_psd_lowrep.rds")
+
+bdi_highrep <- bdi
+pomp::coef(bdi_highrep)["xi"] <- pomp::coef(bdi_highrep)["xi"] + pomp::coef(bdi)["betap"]
+pomp::coef(bdi_highrep)["betap"] <- 0
+sim_highrep <- pomp::simulate(bdi_highrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(sim_highrep, "sim_psd_highrep.rds")
+
+bdit_low <- bdit
+pomp::coef(bdit_low)["betar"] <- 0
+simt_low <- pomp::simulate(bdit_low, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(simt_low, "sim_psd_lowtrans.rds")
+
+bdit_high <- bdit
+pomp::coef(bdit_high)["lambda"] <- pomp::coef(bdit_high)["lambda"] + pomp::coef(bdit)["betar"] * pomp::coef(bdit)["eta"]
+pomp::coef(bdit_high)["betar"] <- 0
+simt_high <- pomp::simulate(bdit_high, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(simt_high, "sim_psd_hightrans.rds")
+
 ### Heterogeneous ensemble simulation
 
 nunits <- 1000
