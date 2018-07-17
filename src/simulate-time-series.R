@@ -136,27 +136,48 @@ saveRDS(sim_same, "sim_same.rds")
 
 ### Power spectra simulations
 
+psd_pars <- list()
+options("stringsAsFactors" = FALSE)
+psd_times <- 1:520
+
 bdi_lowrep <- bdi
 pomp::coef(bdi_lowrep)["betap"] <- 0
-sim_lowrep <- pomp::simulate(bdi_lowrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+sim_lowrep <- pomp::simulate(bdi_lowrep, as.data.frame = TRUE,
+                             times = psd_times, nsim = 1000)
 saveRDS(sim_lowrep, "sim_psd_lowrep.rds")
+psd_pars[[1]] <- do.call(data.frame, c(list(iv = "rep", lev = "low"),
+                                       as.list(pomp::coef(bdi_lowrep))))
 
 bdi_highrep <- bdi
 pomp::coef(bdi_highrep)["xi"] <- pomp::coef(bdi_highrep)["xi"] + pomp::coef(bdi)["betap"]
 pomp::coef(bdi_highrep)["betap"] <- 0
-sim_highrep <- pomp::simulate(bdi_highrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+sim_highrep <- pomp::simulate(bdi_highrep, as.data.frame = TRUE,
+                              times = psd_times, nsim = 1000)
 saveRDS(sim_highrep, "sim_psd_highrep.rds")
+psd_pars[[2]] <- do.call(data.frame, c(list(iv = "rep", lev = "high"),
+                                       as.list(pomp::coef(bdi_highrep))))
 
 bdit_low <- bdit
 pomp::coef(bdit_low)["betar"] <- 0
-simt_low <- pomp::simulate(bdit_low, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+simt_low <- pomp::simulate(bdit_low, as.data.frame = TRUE,
+                           times = psd_times, nsim = 1000)
 saveRDS(simt_low, "sim_psd_lowtrans.rds")
+psd_pars[[3]] <- do.call(data.frame, c(list(iv = "trans", lev = "low"),
+                                       as.list(pomp::coef(bdit_low))))
 
 bdit_high <- bdit
 pomp::coef(bdit_high)["lambda"] <- pomp::coef(bdit_high)["lambda"] + pomp::coef(bdit)["betar"] * pomp::coef(bdit)["eta"]
 pomp::coef(bdit_high)["betar"] <- 0
-simt_high <- pomp::simulate(bdit_high, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+simt_high <- pomp::simulate(bdit_high, as.data.frame = TRUE,
+                            times = psd_times, nsim = 1000)
 saveRDS(simt_high, "sim_psd_hightrans.rds")
+psd_pars[[4]] <- do.call(data.frame, c(list(iv = "trans", lev = "high"),
+                                       as.list(pomp::coef(bdit_high))))
+
+psd_pars <- do.call(rbind, psd_pars)
+stopifnot(isTRUE(all.equal(max(abs(diff(psd_times) - psd_times[1])), 0))) ## assertion for next line
+psd_pars$T <- psd_times[1]
+saveRDS(psd_pars, "psd_pars.rds")
 
 ### Heterogeneous ensemble simulation
 

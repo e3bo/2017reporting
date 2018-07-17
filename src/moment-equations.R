@@ -13,6 +13,8 @@ sfm_reports_nb_eq <- expression((1 + 1 / phi) *
 bilinear_mom_eq <- expression(1 +
     lambda / (gamma^2 * nu) * sinh(gamma) ^ 2 * exp(-(eta - lambda) * tau))
 autocor_eq <- expression((math_bmf - 1) * math_mean ^ 2 / math_var)
+autocov_pref_eq <- expression(math_mean ^ 2 * lambda / (gamma^2 * nu) * sinh(gamma) ^ 2 )
+eig_eq <- expression(lambda - eta)
 
 eval_eq <- function(df, eq){
   apply(df, 1, function(x) with(as.list(x), eval(eq)))

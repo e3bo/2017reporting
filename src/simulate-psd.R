@@ -137,6 +137,35 @@ simt$change <- "ptrans"
 sim_same <- rbind(sim, simt)
 saveRDS(sim_same, "sim_same.rds")
 
+### Power spectra simulations
+
+bdi_lowrep <- bdi
+pomp::coef(bdi_lowrep)["betap"] <- 0
+sim_lowrep <- pomp::simulate(bdi_lowrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(sim_lowrep, "sim_psd_lowrep.rds")
+
+bdi_highrep <- bdi
+pomp::coef(bdi_highrep)["xi"] <- pomp::coef(bdi_highrep)["xi"] + pomp::coef(bdi)["betap"]
+pomp::coef(bdi_highrep)["betap"] <- 0
+sim_highrep <- pomp::simulate(bdi_highrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(sim_highrep, "sim_psd_highrep.rds")
+
+bdit_low <- bdit
+pomp::coef(bdit_low)["betar"] <- 0
+simt_low <- pomp::simulate(bdit_low, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(simt_low, "sim_psd_lowtrans.rds")
+
+bdit_high <- bdit
+pomp::coef(bdit_high)["lambda"] <- pomp::coef(bdit_high)["lambda"] + pomp::coef(bdit)["betar"] * pomp::coef(bdit)["eta"]
+pomp::coef(bdit_high)["betar"] <- 0
+simt_high <- pomp::simulate(bdit_high, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+saveRDS(simt_high, "sim_psd_hightrans.rds")
+
+
+
+
+
+
 ### Heterogeneous ensemble simulation
 
 nunits <- 1000
@@ -169,21 +198,26 @@ psd <- function(f, eig, ct, ap) {
   ct + ap * sinh(eig) / (cos(2 * pi * f) - cosh(eig))
 }
 
+bdi_lowrep <- bdi
+pomp::coef(bdi_lowrep)["betap"] <- 0
+sim_lowrep <- pomp::simulate(bdi_lowrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+
+bdi_highrep <- bdi
+pomp::coef(bdi_highrep)["xi"] <- pomp::coef(bdi_highrep)["xi"] + pomp::coef(bdi)["betap"]
+pomp::coef(bdi_highrep)["betap"] <- 0
+sim_highrep <- pomp::simulate(bdi_highrep, as.data.frame = TRUE, times = 1:520, nsim = 1000)
 
 
 
-bdips <- bdi
-pomp::coef(bdips)["betap"] <- 0
-simps <- pomp::simulate(bdips, as.data.frame = TRUE, times = 1:520, nsim = 1000)
 
-eig <- with(as.list(pomp::coef(bdips)), lambda - eta)
+eig <- with(as.list(pomp::coef(bdi_lowrep)), lambda - eta)
 mean_eq <- expression(eta * T * nu * xi/ (eta - lambda))
 gamma_eq <- expression((eta - lambda) * T / 2)
 sfm_cases_eq <- expression(1 + lambda / (nu * gamma) * (1 - (1 - exp(-2 * gamma)) / (2 * gamma)))
 var_binom_eq <- expression(math_mean ^ 2 * math_sfm_cases + math_mean - math_mean ^ 2)
 autocov_pref_eq <- expression(math_mean ^ 2 * lambda / (gamma^2 * nu) * sinh(gamma) ^ 2 )
 
-evalf <- function(eq) with(as.list(coef(bdips)), eval(eq))
+evalf <- function(eq) with(as.list(coef(bdi_lowrep)), eval(eq))
 math_mean <- evalf(mean_eq)
 gamma <- evalf(gamma_eq)
 math_sfm_cases <- evalf(sfm_cases_eq)
@@ -191,10 +225,9 @@ var_binom <- evalf(var_binom_eq)
 math_ap <- evalf(autocov_pref_eq)
 math_ct <- var_binom - math_ap
 
-
 anans <- psd(f = fz, eig = eig, ct = math_ct, ap = math_ap)
 
-splt <- split(simps, simps$sim)
+splt <- split(sim_lowrep, sim_lowrep$sim)
 specs <- sapply(splt, function(x) rawspec(x$reports))
 spec <- rowMeans(specs)
 
