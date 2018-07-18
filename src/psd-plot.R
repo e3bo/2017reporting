@@ -54,7 +54,14 @@ sdata <- do.call(rbind, sdf)
 sdm <- reshape2::melt(sdata, id.vars = c("iv", "lev", "fz"),
                       value.name = "Power")
 
-g <- ggplot(data = sdm, aes(x = fz, y = Power, color = variable))
-g <- g + geom_line() + facet_grid(lev~iv, scales = "free_y")
-g <- g + scale_y_log10() + xlab("Frequency (1 / w)")
-g
+sdm$Method <- factor(sdm$variable, levels = c("spec_num", "spec_an"), labels = c("Numeric", "Analytic"))
+sdm$iv_facet <- factor(sdm$iv, levels = c("rep", "trans"), labels = c("Reporting\nincrease", "Transmission\nincrease"))
+sdm$lev_facet <- factor(sdm$lev, levels = c("low", "high"), labels = c("Before", "After"))
+
+g <- ggplot(data = sdm, aes(x = fz, y = Power, color = Method))
+g <- g + geom_line() + facet_grid(lev_facet ~ iv_facet, scales = "free_y")
+g <- g + scale_y_log10() + xlab("Frequency (1 / week)")
+g <- g + scale_color_manual(values = pal[-2], guide = guide_legend(title.position = "left"))
+g <- g + theme(legend.position = 'top')
+
+ggsave(file = "psd.pdf", plot = g, width = 84, height = 100, units = "mm")
