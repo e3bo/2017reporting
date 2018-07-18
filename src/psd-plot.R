@@ -4,7 +4,7 @@ source("moment-equations.R")
 source("plotting.R")
 psd_pars <- readRDS("psd_pars.rds")
 
-dsel <- which(grepl("iv|lev", colnames(psd_pars))) ## avoid character types for apply()
+dsel <- which(grepl("iv|lev", colnames(psd_pars))) ## avoid character for apply()
 psd_pars$math_mean <- eval_eq(psd_pars[, -dsel], mean_eq)
 psd_pars$gamma <- eval_eq(psd_pars[, -dsel], gamma_eq)
 psd_pars$math_sfm_cases <- eval_eq(psd_pars[, -dsel], sfm_cases_eq)
@@ -54,14 +54,19 @@ sdata <- do.call(rbind, sdf)
 sdm <- reshape2::melt(sdata, id.vars = c("iv", "lev", "fz"),
                       value.name = "Power")
 
-sdm$Method <- factor(sdm$variable, levels = c("spec_num", "spec_an"), labels = c("Numeric", "Analytic"))
-sdm$iv_facet <- factor(sdm$iv, levels = c("rep", "trans"), labels = c("Reporting\nincrease", "Transmission\nincrease"))
-sdm$lev_facet <- factor(sdm$lev, levels = c("low", "high"), labels = c("Before", "After"))
+sdm$Method <- factor(sdm$variable, levels = c("spec_num", "spec_an"),
+                     labels = c("Numeric", "Analytic"))
+sdm$iv_facet <- factor(sdm$iv, levels = c("rep", "trans"),
+                       labels = c("Reporting\nincrease",
+                           "Transmission\nincrease"))
+sdm$lev_facet <- factor(sdm$lev, levels = c("low", "high"),
+                        labels = c("Before", "After"))
 
 g <- ggplot(data = sdm, aes(x = fz, y = Power, color = Method))
 g <- g + geom_line() + facet_grid(lev_facet ~ iv_facet, scales = "free_y")
 g <- g + scale_y_log10() + xlab("Frequency (1 / week)")
-g <- g + scale_color_manual(values = pal[-2], guide = guide_legend(title.position = "left"))
+g <- g + scale_color_manual(values = pal[-2],
+                            guide = guide_legend(title.position = "left"))
 g <- g + theme(legend.position = 'top')
 
 ggsave(file = "psd.pdf", plot = g, width = 84, height = 100, units = "mm")
