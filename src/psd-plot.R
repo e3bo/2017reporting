@@ -64,7 +64,8 @@ sdm$lev_facet <- factor(sdm$lev, levels = c("low", "high"),
 
 g <- ggplot(data = sdm, aes(x = fz, y = Power, color = Method))
 g <- g + geom_line() + facet_grid(lev_facet ~ iv_facet, scales = "free_y")
-g <- g + scale_y_log10() + xlab("Frequency (1 / week)")
+lab <- expression(paste("Frequency ", (week^{-1})))
+g <- g + scale_y_log10() + xlab(lab)
 g <- g + scale_color_manual(values = pal[-2],
                             guide = guide_legend(title.position = "left"))
 g <- g + theme(legend.position = 'top')
