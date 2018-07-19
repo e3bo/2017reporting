@@ -41,7 +41,7 @@ g <- g + scale_color_manual(values = pal)
 g <- g + scale_size_manual(values = c(2, 1.5, 1))
 g <- g + facet_wrap(~moment, ncol = 1, scales = "free_y")
 g <- g + theme(legend.position = "top")
-leglab <- expression(paste("Trans. rate, ", lambda ~ (wk^{-1})))
+leglab <- expression(paste("Trans. rate, ", lambda ~ (week^{-1})))
 g <- g + labs(x = expression(paste("Reporting probability, ", xi)),
               y = "Value", color = leglab, size = leglab)
 
