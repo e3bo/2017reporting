@@ -26,8 +26,11 @@ pgrid %>%
          key = "moment", value = "value") -> pdata
 
 pdata$moment <- factor(pdata$moment,
-                       labels = c("Mean", "Second factorial moment", "Variance", "Coefficient of variation", "Lag-1 autocorrelation"),
-                       levels = c("math_mean", "math_sfm_cases", "math_var", "math_cv", "math_autocor"))
+                       labels = c("Mean", "Second factorial moment",
+                           "Variance", "Coefficient of variation",
+                           "Lag-1 autocorrelation"),
+                       levels = c("math_mean", "math_sfm_cases", "math_var",
+                           "math_cv", "math_autocor"))
 pdata$lambda_factor <- as.factor(pdata$lambda)
 
 g <- ggplot(pdata,
@@ -42,7 +45,7 @@ leglab <- expression(paste("Trans. rate, ", lambda ~ (wk^{-1})))
 g <- g + labs(x = expression(paste("Reporting probability, ", xi)),
               y = "Value", color = leglab, size = leglab)
 
-ggsave(file = "mean-and-sfm.pdf", plot = g, height = 175, width = 84,
+ggsave(file = "mean-and-sfm.pdf", plot = g, width = 84,
        units = "mm")
 
 sessionInfo()

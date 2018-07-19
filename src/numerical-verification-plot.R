@@ -38,11 +38,11 @@ m2$statistic <- gsub("^math_", "", m2$variable)
 m2$statistic <- gsub("_reports$", "", m2$statistic)
 m2$variable <- NULL
 m12 <- merge(m1, m2)
+m12 <- m12[m12$statistic != "bmf", ]
 m12$facet <- factor(m12$statistic,
-                    levels = c("mean", "sfm", "var", "cv", "bmf", "autocor"),
+                    levels = c("mean", "sfm", "var", "cv", "autocor"),
                     labels = c("Mean", "Second factorial moment", "Variance",
-                               "Coefficient of variation",
-                               "Bilinear moment function", "Autocorrelation"))
+                               "Coefficient of variation", "Autocorrelation"))
 
 g <- ggplot(m12, aes(x = theory, y = simulation)) +
       geom_abline(slope = 1, intercept = 0, col = "grey") +
