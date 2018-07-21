@@ -131,7 +131,23 @@ pomp::coef(bdit)["xi"] <- 0.5
 simt <- pomp::simulate(bdit, as.data.frame = TRUE, times = 1:520, nsim = 1000)
 simt$change <- "ptrans"
 
-sim_same <- rbind(sim, simt)
+bdiuu <- bdi
+pomp::coef(bdiuu)["lambda"] <- 0.5
+pomp::coef(bdiuu)["betap"] <- 0.4
+pomp::coef(bdiuu)["betar"] <- 0.4
+pomp::coef(bdiuu)["xi"] <- 0.1
+simuu <- pomp::simulate(bdiuu, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+simuu$change <- "prep_up_trans_up"
+
+bdidu <- bdi
+pomp::coef(bdidu)["lambda"] <- 0.5
+pomp::coef(bdidu)["betap"] <- -0.4
+pomp::coef(bdidu)["betar"] <- 0.4
+pomp::coef(bdidu)["xi"] <- 0.9
+simdu <- pomp::simulate(bdidu, as.data.frame = TRUE, times = 1:520, nsim = 1000)
+simdu$change <- "prep_down_trans_up"
+
+sim_same <- rbind(sim, simt, simuu, simdu)
 saveRDS(sim_same, "sim_same.rds")
 
 ### Power spectra simulations
