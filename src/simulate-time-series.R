@@ -216,7 +216,7 @@ params2$betar <- 0.4
 
 params3 <- params1
 params3$repnum <- runif(nunits, 0.45, 0.55)
-params3$xi <- runif(nunits, 0.45, 0.55)
+params3$xi <- runif(nunits, 0.05, 0.15)
 params3$betap <- 0.4
 params3$betar <- 0.4
 
