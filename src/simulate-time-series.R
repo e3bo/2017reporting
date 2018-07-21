@@ -88,12 +88,14 @@ sim_with_params <- function(mod, ..., times = seq(1, 52 * 10), nsim = 1){
   pomp::coef(mod) <- unlist(pars[pnames])
   out <- pomp::simulate(mod, as.data.frame = TRUE, times = times, nsim = nsim)
   out$parset <- pars$parset
-  if (pars$betar > 0 && !pars$betap > 0) {
+  if (pars$betar > 0 && pars$betap == 0) {
     out$change <- "ptrans"
-  } else if (!pars$betar > 0 && pars$betap > 0) {
+  } else if (pars$betar == 0 && pars$betap > 0) {
     out$change <- "prep"
-  } else {
-    out$change <- "other"
+  } else if (pars$betar > 0 && pars$betap > 0){
+    out$change <- "prep_up_trans_up"
+  } else if (pars$betar > 0 && pars$betap < 0){
+    out$change <- "prep_down_trans_up"
   }
   out
 }
@@ -211,7 +213,20 @@ params2$repnum <- runif(nunits, 0.45, 0.55)
 params2$xi <- runif(nunits, 0.45, 0.55)
 params2$betap <- 0
 params2$betar <- 0.4
-params <- rbind(params1, params2)
+
+params3 <- params1
+params3$repnum <- runif(nunits, 0.45, 0.55)
+params3$xi <- runif(nunits, 0.45, 0.55)
+params3$betap <- 0.4
+params3$betar <- 0.4
+
+params4 <- params1
+params4$repnum <- runif(nunits, 0.45, 0.55)
+params4$xi <- runif(nunits, 0.85, 0.95)
+params4$betap <- -0.4
+params4$betar <- 0.4
+
+params <- rbind(params1, params2, params3, params4)
 params$lambda <- params$eta * params$repnum
 
 sim_vary <- do_sims(params, bdi)
