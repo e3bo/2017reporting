@@ -145,7 +145,7 @@ bdidu <- bdi
 pomp::coef(bdidu)["lambda"] <- 0.5
 pomp::coef(bdidu)["betap"] <- -0.4
 pomp::coef(bdidu)["betar"] <- 0.4
-pomp::coef(bdidu)["xi"] <- 0.9
+pomp::coef(bdidu)["xi"] <- 0.5
 simdu <- pomp::simulate(bdidu, as.data.frame = TRUE, times = 1:520, nsim = 1000)
 simdu$change <- "prep_down_trans_up"
 
@@ -222,7 +222,7 @@ params3$betar <- 0.4
 
 params4 <- params1
 params4$repnum <- runif(nunits, 0.45, 0.55)
-params4$xi <- runif(nunits, 0.85, 0.95)
+params4$xi <- runif(nunits, 0.45, 0.55)
 params4$betap <- -0.4
 params4$betar <- 0.4
 

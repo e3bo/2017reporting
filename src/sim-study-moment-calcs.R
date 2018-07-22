@@ -24,12 +24,12 @@ saveRDS(mwe_same, "mwe-same.rds")
 
 mwe_same %>% filter(time > win_size - 0.5) %>%
     group_by(change, time) %>%
-  dplyr::summarize(mean_rM = mean(rM),
-                   mean_rSecFacMom = mean(rSecFacMom),
-                   q05_rM = quantile(rM, prob = 0.05),
-                   q95_rM = quantile(rM, prob = 0.95),
-                   q05_rSecFacMom = quantile(rSecFacMom, prob = 0.05),
-                   q95_rSecFacMom = quantile(rSecFacMom, prob = 0.95)) -> foo
+  dplyr::summarize(mean_rM = mean(rM, na.rm = TRUE),
+                   mean_rSecFacMom = mean(rSecFacMom, na.rm = TRUE),
+                   q05_rM = quantile(rM, prob = 0.05, na.rm = TRUE),
+                   q95_rM = quantile(rM, prob = 0.95, na.rm = TRUE),
+                   q05_rSecFacMom = quantile(rSecFacMom, prob = 0.05, na.rm = TRUE),
+                   q95_rSecFacMom = quantile(rSecFacMom, prob = 0.95, na.rm = TRUE)) -> foo
 
 foo %>% select(change, time, q05_rM, q05_rSecFacMom) %>%
   gather(q05_rM, q05_rSecFacMom, key = "var", value = "q05") %>%
