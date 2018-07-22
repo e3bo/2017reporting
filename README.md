@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/113359526.svg)](https://zenodo.org/badge/latestdoi/113359526)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1319108.svg)](https://doi.org/10.5281/zenodo.1319108)
 
 These files are available to reproduce the results for the manuscript
 "Disentangling reporting and disease transmission using second order
