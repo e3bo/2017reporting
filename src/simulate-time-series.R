@@ -113,7 +113,7 @@ do_sims <- function(par, md, nsim = 1){
 ## Simulations for numerical verification
 
 bdi <- create_bdi(lambda = 0.5, eta = 1, N_0 = -1, nu = 1)
-nv_sim <- do_sims(pars, bdi, nsim = 1e4)
+system.time(nv_sim <- do_sims(pars, bdi, nsim = 1e5))
 saveRDS(pars, "pars.rds")
 saveRDS(nv_sim, "nv_sim.rds")
 
