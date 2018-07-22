@@ -13,5 +13,4 @@ Hub. So, on a system with Docker installed, running the bash script
 ``run-scripts`` from within the directory containing this README will
 pull down the image and run the Makefile inside of it to reproduce all
 of the results. The results will be placed in a time-stamped
-subdirectory. Reproducing the results takes less the 10 minutes on
-desktop with 2 3GHz cores and 5.8 GiB of memory.
+subdirectory. Producing the results took less the 30 minutes using 2 2GHz cores.
