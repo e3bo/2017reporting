@@ -1,10 +1,12 @@
-all: mean-and-sfm.eps numerical-verification.eps example-sims.eps quantiles.eps psd.eps
+all: mean-and-sfm.eps numerical-verification.eps example-sims.eps quantiles.eps quantiles-both-changing.eps psd.eps
 
 %.eps: %.pdf
 	/usr/bin/pdftops -eps $(<F) $%
 
 psd.pdf: psd-plot.R flag-sim-data plotting.R moment-equations.R
 	./$< >$(<F).so 2>$(<F).se
+
+quantiles-both-changing.pdf: quantiles.pdf
 
 quantiles.pdf: quantile-plot.R flag-mwe-data plotting.R
 	./$< >$(<F).so 2>$(<F).se
