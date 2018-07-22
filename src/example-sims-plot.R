@@ -5,7 +5,8 @@ source("plotting.R")
 
 mwe_same <- readRDS("mwe-same.rds")
 
-mwe_same %>% filter(sim %in% "2") %>% group_by() %>%
+mwe_same %>% filter(sim %in% "2") %>% filter(change %in% c("prep", "ptrans")) %>%
+    group_by() %>%
     mutate(scenario = factor(change,  levels = c("prep", "ptrans"),
                              labels = c("Reporting\nincrease",
                                         "Transmission\nincrease"))) %>%
