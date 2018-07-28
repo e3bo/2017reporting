@@ -26,9 +26,9 @@ rawspec <- function(x) {
              detrend = FALSE, plot = FALSE)$spec
 }
 
-psd <- function(f, eig, var, ap) {
+psd <- function(f, eig, var, ap, dt) {
   ct <- var - ap
-  ct + ap * sinh(eig) / (cos(2 * pi * f) - cosh(eig))
+  ct + ap * sinh(eig * dt) / (cos(2 * pi * f * dt) - cosh(eig * dt))
 }
 
 spec_df <- function(pars){
@@ -40,7 +40,7 @@ spec_df <- function(pars){
   N <- nrow(splt[[1]])
   fz <- seq(1, floor(N / 2)) / N
   aspec <- psd(f = fz, eig = pars$math_eig, var = pars$math_var,
-               ap = pars$math_ap)
+               ap = pars$math_ap, dt = pars$T)
   data.frame(fz = fz, spec_num = spec, spec_an = aspec, iv = pars$iv,
              lev = pars$lev)
 }
